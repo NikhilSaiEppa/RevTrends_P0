@@ -1,6 +1,5 @@
 import mysql.connector
 
-
 def connect_to_database(username, password, database):
     return mysql.connector.connect(
         host='localhost',
@@ -14,7 +13,7 @@ def admin():
     password = input("Enter your admin password: ")
     database = 'revtrends'
 
-#     # Connect as an admin user to validate credentials
+    # Connect as an admin user to validate credentials
     admin_connection = connect_to_database(username, password, database)
 
     if admin_connection.is_connected():
