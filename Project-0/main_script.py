@@ -20,5 +20,5 @@ while True:
         admin()
 
     else:
-        print("Exiting authentication.")
+        print("Invalid choice.")
         break
