@@ -46,5 +46,5 @@ def new_user():
             # Close the admin connection
             admin_cursor.close()
             admin_connection.close()
-            print("Admin connection closed")
+            print("connection closed")
 

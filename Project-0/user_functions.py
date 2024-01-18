@@ -37,6 +37,7 @@ def User():
                     print("2. See which platform got more likes")
                     print("3. See which category got trend")
                     print("4. See which sentiment got trend")
+                    print("'Exit' for main menu" )
                     option = input("Enter your choice: ")
 
                     if option == '1':
