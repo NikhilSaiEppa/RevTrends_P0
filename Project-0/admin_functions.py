@@ -139,8 +139,8 @@ def admin_menu():
     print("Admin Menu:")
     print("1. Add Categories")
     print("2. Update Country Names")
-    print("3. See Which Test has Positive Sentiment")
-    print("4. Delete the data :")
+    print("3. Which Text has Positive Sentiment")
+    print("4. Delete the data ")
     
     print("5. Exit")
 
@@ -216,67 +216,92 @@ def admin():
                 else:
                     print("No results found.")
 
-                id=input("Enter which country do you want to update: ")
-                new_country_name=input("Enter the New country Name : ")
+                old_country_name=input("Enter The country do you want to update: ")
+                q=f"select count(*) from country where country='{old_country_name}'"
+                cursor.execute(q)
+                x = cursor.fetchall()
+                for i in x:
+                    if i['count(*)']!=0:
+                        new_country_name=input("Enter the New country Name : ")
 
-                update_query=f"update country set country='{new_country_name}'where country_id={id}"
-                execute_query(admin_connection, update_query)
-                admin_connection.commit()
-                print(" successfully updated Country ")
+                        update_query=f"update country set country='{new_country_name}'where country='{old_country_name}'"
+                        execute_query(admin_connection, update_query)
+                        admin_connection.commit()
+                        print(" successfully updated Country ")
+                    else:
+                        print("INVALID County Name ")
 
 
             elif choice == '4':
                 # delete data
-                query = "SELECT data_id,Likes FROM main_table"
-                cursor.execute(query)
-                results = cursor.fetchall()
+                try:
+                    query = "SELECT data_id,text,Likes,retweets FROM main_table"
+                    cursor.execute(query)
+                    results = cursor.fetchall()
 
-                if results:
-                    # Create a PrettyTable instance
-                    table = PrettyTable()
-                    table.field_names = ["data_id", "Likes"]
+                    if results:
+                        # Create a PrettyTable instance
+                        table = PrettyTable()
+                        table.field_names = ["data_id",'text', "Likes",'retweets']
 
-                    # Add rows to the table
-                    for row in results:
-                        table.add_row([row['data_id'], row['Likes']])
+                        # Add rows to the table
+                        for row in results:
+                            table.add_row([row['data_id'], row['text'],row['Likes'],row['retweets']])
 
-                    # Set the table align style
-                    table.align = 'l'
+                        # Set the table align style
+                        table.align = 'l'
 
-                    # Print the table
-                    print(table)
-                else:
-                    print("No results found.")
-                id=input("Enter the data_id You want to delete:")
-                delete_query=f"delete from main_table where data_id={id}"
-                execute_query(admin_connection, delete_query)
-                admin_connection.commit()
-                print(" successfully deleted record ")
+                        # Print the table
+                        print(table)
+                    else:
+                        print("No results found.")
+                    id=input("Enter the data_id You want to delete:")
+                    if int(id)<=127:
+                        
+                        delete_query=f"delete from main_table where data_id={id}"
+                        print(delete_query,'delete_query')
+                        execute_query(admin_connection, delete_query)
+                        admin_connection.commit()
+                        print(" successfully deleted record ")
+                    else:
+                        print("Invalid data_id ,  Enter Valid data_id")
+                except ValueError:
+                    print("Invalid input. Please enter a valid integer.")
+                except Exception as e:
+                    print(f"An error occurred: {e}")
 
 
               
             elif choice == '3':  # Read
-                records=input("Enter How many records do you want to explore: ")
-                query = f"SELECT main_table.text,sentiment.sentiment FROM main_table join sentiment on main_table.sentiment_id=sentiment.sentiment_id limit {records}"
+                try:
 
-                cursor.execute(query)
-                results = cursor.fetchall()
-                if results:
-                    # Create a PrettyTable instance
-                    table = PrettyTable()
-                    table.field_names = ["text", "sentiment"]
+                    records=input("Enter How many records do you want to explore: ")
+                    if int(records):
 
-                    # Add rows to the table
-                    for row in results:
-                        table.add_row([row['text'], row['sentiment']])
+                        query = f"SELECT main_table.text,sentiment.sentiment FROM main_table join sentiment on main_table.sentiment_id=sentiment.sentiment_id limit {records}"
 
-                    # Set the table align style
-                    table.align = 'l'
+                        cursor.execute(query)
+                        results = cursor.fetchall()
+                        if results:
+                            # Create a PrettyTable instance
+                            table = PrettyTable()
+                            table.field_names = ["text", "sentiment"]
 
-                    # Print the table
-                    print(table)
-                else:
-                    print("No results found.")
+                            # Add rows to the table
+                            for row in results:
+                                table.add_row([row['text'], row['sentiment']])
+
+                            # Set the table align style
+                            table.align = 'l'
+
+                            # Print the table
+                            print(table)
+                        else:
+                            print("No results found.")
+                except ValueError:
+                    print("Invalid input. Please enter a valid integer.")
+                except Exception as e:
+                    print(f"An error occurred: {e}")
             # execute_query(admin_connection, query)
 
         # Close the connection
@@ -286,5 +311,4 @@ def admin():
     else:
         print("Login failed. Invalid username or password.")
 
-# Run the admin function
 

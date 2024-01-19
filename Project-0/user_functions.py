@@ -34,9 +34,9 @@ def User():
                     # Offer additional option to the user
                     print("\nOptions:")
                     print("1. Execute your own query")
-                    print("2. See which platform got more likes")
-                    print("3. See which category got trend")
-                    print("4. See which sentiment got trend")
+                    print("2.  Which platform got more likes")
+                    print("3.  which category got trend")
+                    print("4.  Which sentiment got trend")
                     print("'Exit' for main menu" )
                     option = input("Enter your choice: ")
 
@@ -64,7 +64,7 @@ def User():
 
                         # Fetch and print the results
                         platform_likes_result = cursor.fetchall()
-                        print(platform_likes_result)
+                        # print(platform_likes_result)
 
                         platform=[entry['platform'] for entry in platform_likes_result]
                         Likes=[count['TotalLikes'] for count in platform_likes_result]
@@ -92,7 +92,7 @@ def User():
 
                         # Fetch and print the results
                         trending_category_result = cursor.fetchall()
-                        print(trending_category_result)
+                        # print(trending_category_result)
                         
 
                         categories=[entry['categories'] for entry in trending_category_result]

@@ -76,9 +76,25 @@ class TestUserFunction(unittest.TestCase):
         with patch('builtins.print') as mock_print:
             User()
 
-        # Add assertions based on the expected behavior when the user enters an invalid option
+    @patch('builtins.input', side_effect=['existing_username', 'password', '4', 'exit'])
+    @patch('user_functions.connect_to_database')
+    @patch('user_functions.plt.show')
+    def test_user_sentiment_analysis(self, mock_plt_show, mock_connect_to_database, mock_input):
+        # Similar setup as the platform analysis test, but with different side_effect values
+        pass  # Add your test logic here
+    @patch('builtins.input', side_effect=['existing_username', 'password', 'exit'])
+    @patch('user_functions.connect_to_database')
+    def test_user_exit(self, mock_connect_to_database, mock_input):
+        # Mock the user connection
+        mock_user_connection = mock_connect_to_database.return_value
+        mock_cursor = mock_user_connection.cursor.return_value
 
-    # Add more test methods for other functionality in the User function
+        # Mock the result of the SELECT query to simulate a regular user
+        mock_cursor.fetchone.return_value = {'role': 'regular_user'}
+
+        # Run the function
+        with patch('builtins.print') as mock_print:
+            User()
 
 if __name__ == '__main__':
     unittest.main()
