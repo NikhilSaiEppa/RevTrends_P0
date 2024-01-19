@@ -137,10 +137,11 @@ def execute_query(connection, query):
 
 def admin_menu():
     print("Admin Menu:")
-    print("1. Insert")
-    print("2. Update")
-    print("3. Delete the user")
-    print("4. See Which Test has Positive Sentiment")
+    print("1. Add Categories")
+    print("2. Update Country Names")
+    print("3. See Which Test has Positive Sentiment")
+    print("4. Delete the data :")
+    
     print("5. Exit")
 
 def admin():
@@ -173,41 +174,90 @@ def admin():
             # table_name = input("Enter the table name: ")
             query = ''
 
-            if choice == '1':  # Insert
-                columns = input("Enter column names (comma-separated): ")
-                values = input("Enter values (comma-separated): ")
-                query = f"INSERT INTO {table_name} ({columns}) VALUES ({values})"
+            if choice == '1':  # add categories
+                query = "SELECT categories FROM categories"
+                cursor.execute(query)
+                results = cursor.fetchall()
+                print("Categories:")
+                for result in results:
+                    print(">>",result['categories'])
+
+                values = input("Enter the Category name to insert :  ")
+                query = f"INSERT INTO categories(categories) VALUES ('{values}')"
+                execute_query(admin_connection, query)
+                admin_connection.commit()
+                query = "SELECT categories FROM categories"
+                cursor.execute(query)
+                results = cursor.fetchall()
+                print("Categories:")
+                for result in results:
+                    print(">>",result['categories'])
+                
             elif choice == '2':  # Update
-                column_value_pairs = input("Enter column-value pairs (comma-separated): ")
-                condition = input("Enter the WHERE condition: ")
-                query = f"UPDATE {table_name} SET {column_value_pairs} WHERE {condition}"
-            elif choice == '3':
-                # Display data from db_users table
-                query_display = "SELECT * FROM db_users"
-                cursor.execute(admin_connection, query_display)
+
+                query="select * from country"
+                cursor.execute(query)
                 results=cursor.fetchall()
 
-                for row in results:
-                    print({
-                        'user_id': row['user_id'],
-                        'username': row['username'],
-                        'password': row['password'],
-                        'role': row['role']
-                    })
+                if results:
+                    # Create a PrettyTable instance
+                    table = PrettyTable()
+                    table.field_names = ["S.NO", "Country"]
 
-                # Get username to delete
-                username_to_delete = input("Enter the username to delete: ")
+                    # Add rows to the table
+                    for row in results:
+                        table.add_row([row['country_id'], row['country']])
 
-                # Delete user from db_users table
-                query_delete = f"DELETE FROM db_users WHERE username = '{username_to_delete}'"
-                execute_query(admin_connection, query_delete)
+                    # Set the table align style
+                    table.align = 'l'
+
+                    # Print the table
+                    print(table)
+                else:
+                    print("No results found.")
+
+                id=input("Enter which country do you want to update: ")
+                new_country_name=input("Enter the New country Name : ")
+
+                update_query=f"update country set country='{new_country_name}'where country_id={id}"
+                execute_query(admin_connection, update_query)
+                admin_connection.commit()
+                print(" successfully updated Country ")
 
 
-                # Display updated data from db_users table
-                query_display_updated = "SELECT * FROM db_users"
-                execute_query(admin_connection, query_display_updated)
-            elif choice == '4':  # Read
-                query = f"SELECT main_table.text,sentiment.sentiment FROM main_table join sentiment on main_table.sentiment_id=sentiment.sentiment_id limit 10"
+            elif choice == '4':
+                # delete data
+                query = "SELECT data_id,Likes FROM main_table"
+                cursor.execute(query)
+                results = cursor.fetchall()
+
+                if results:
+                    # Create a PrettyTable instance
+                    table = PrettyTable()
+                    table.field_names = ["data_id", "Likes"]
+
+                    # Add rows to the table
+                    for row in results:
+                        table.add_row([row['data_id'], row['Likes']])
+
+                    # Set the table align style
+                    table.align = 'l'
+
+                    # Print the table
+                    print(table)
+                else:
+                    print("No results found.")
+                id=input("Enter the data_id You want to delete:")
+                delete_query=f"delete from main_table where data_id={id}"
+                execute_query(admin_connection, delete_query)
+                admin_connection.commit()
+                print(" successfully deleted record ")
+
+
+              
+            elif choice == '3':  # Read
+                records=input("Enter How many records do you want to explore: ")
+                query = f"SELECT main_table.text,sentiment.sentiment FROM main_table join sentiment on main_table.sentiment_id=sentiment.sentiment_id limit {records}"
 
                 cursor.execute(query)
                 results = cursor.fetchall()
